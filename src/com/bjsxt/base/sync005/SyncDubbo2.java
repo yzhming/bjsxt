@@ -1,32 +1,42 @@
 package com.bjsxt.base.sync005;
 
 public class SyncDubbo2 {
-
-	public synchronized void method1() {
-		System.out.println("methord1..");
-		method2();
+	
+	static class Main{
+		public int i = 10;  
+		   public synchronized void operationSup() throws InterruptedException{
+			   i--;
+			   System.out.println("Main print i = " + i);
+			   Thread.sleep(1000);
+		   }
 	}
-
-	public synchronized void method2() {
-		System.out.println("methord2..");
-		method3();
+	
+	static class Sub extends Main{
+		   public synchronized void operationSub() throws InterruptedException{
+			 while(i > 0){
+				 i--;
+				 System.out.println("Sub print i = " + i);
+				 Thread.sleep(1000);
+				 this.operationSup();
+			 }
+		   }
 	}
-
-	public synchronized void method3() {
-		System.out.println("methord3..");
-	}
-
+	
 	public static void main(String[] args) {
-		final SyncDubbo2 sd = new SyncDubbo2();
 		Thread t1 = new Thread(new Runnable() {
-
+			
 			@Override
 			public void run() {
-				sd.method1();
-
+				Sub sub = new Sub();
+				try {
+					sub.operationSub();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
 			}
 		});
+		
 		t1.start();
 	}
-
 }
